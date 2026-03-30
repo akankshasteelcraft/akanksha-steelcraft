@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akanksha SteelCraft</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(to bottom, #e6eef7, #f8fafc);
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(to right, #1e3a8a, #2563eb);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.header img { width: 250px; }
+
+.header h1 { margin: 0; }
+
+/* NAV */
+nav {
+    background: #0f172a;
+    padding: 12px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    margin: 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* SECTIONS */
+section {
+    padding: 30px;
+    background: white;
+    margin: 20px;
+    border-radius: 10px;
+    border-top: 5px solid #2563eb;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+h2 { color: #1e3a8a; }
+
+ul { line-height: 1.8; }
+
+.highlight {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+/* SHOP */
+.category {
+    margin-top: 25px;
+}
+
+.category h3 {
+    color: #2563eb;
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 5px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.card {
+    background: #f1f5f9;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #2563eb;
+}
+
+/* FOOTER */
+.footer {
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+/* WHATSAPP */
+.whatsapp {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25D366;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <img src="logo.png" alt="Logo">
+    <div>
+        <h1>Akanksha SteelCraft Solution Pvt. Ltd.</h1>
+        <p>Custom Steel. Smart Living Solutions.</p>
+        <p>📍 Janakpur, Nepal (Near Bhatbhateni) | 📞 9823364064</p>
+        <p>Email: akankshasteelcraft@gmail.com</p>
+    </div>
+</header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="#products">Products</a>
+    <a href="#shop">🛒 Shop</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<section>
+    <h2>🌟 About Us</h2>
+    <p>
+        Akanksha SteelCraft Solutions Pvt. Ltd. is a modern steel fabrication and modular furniture manufacturing company,
+        specializing in custom-designed steel and panel-based furniture with complete solutions from design to installation.
+    </p>
+</section>
+
+<section id="products">
+    <h2>🛠️ Our Products</h2>
+
+    <h3>🪑 Steel Cabinets</h3>
+    <ul>
+        <li>Office Cabinets</li>
+        <li>Storage Lockers</li>
+        <li>Industrial Cabinets</li>
+        <li>Custom Designs</li>
+    </ul>
+
+    <h3>📦 Steel Racks</h3>
+    <ul>
+        <li>Warehouse Racks</li>
+        <li>Supermarket Display Racks</li>
+        <li>Heavy Duty Storage Systems</li>
+    </ul>
+
+    <h3>🪵 Steel + MDF Furniture</h3>
+    <ul>
+        <li>Office Tables & Workstations</li>
+        <li>Beds & Wardrobes</li>
+        <li>Modern Interior Furniture</li>
+        <li>TV Units / TV Racks</li>
+        <li>Tea / Coffee Tables</li>
+    </ul>
+
+</section>
+
+<!-- SHOP WITH CATEGORIES -->
+<section id="shop">
+    <h2>🛒 Shop Our Products</h2>
+
+    <div class="category">
+        <h3>🪑 Steel Cabinets</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>Office Cabinet</h4>
+                <p>Strong and durable</p>
+                <p><strong>Rs. 15,000</strong></p>
+                <a href="https://wa.me/9779823364064">Order</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>📦 Steel Racks</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>Warehouse Rack</h4>
+                <p>Heavy duty</p>
+                <p><strong>Rs. 18,000</strong></p>
+                <a href="https://wa.me/9779823364064">Order</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>🪵 Steel + MDF Furniture</h3>
+        <div class="grid">
+            <div class="card">
+                <h4>Office Table</h4>
+                <p>Modern workstation</p>
+                <p><strong>Rs. 18,000</strong></p>
+                <a href="https://wa.me/9779823364064">Order</a>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<section id="contact">
+    <h2>📞 Contact Us</h2>
+    <p><span class="highlight">Akanksha SteelCraft Solution Pvt. Ltd.</span></p>
+    <p>📍 Janakpur, Near Bhatbhateni</p>
+    <p>📞 9823364064</p>
+</section>
+
+<div class="footer">
+    <p>© 2026 Akanksha SteelCraft | All Rights Reserved</p>
+</div>
+
+<a class="whatsapp" href="https://wa.me/9779823364064">💬</a>
+
+</body>
+</html>
