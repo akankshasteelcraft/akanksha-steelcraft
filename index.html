@@ -6,6 +6,30 @@
 <title>Akanksha SteelCraft</title>
 
 <style>
+#admin {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+#admin input,
+#admin button {
+    width: 100%;
+}
+
+#cart p {
+    background:#f8fafc;
+    padding:8px;
+    border-radius:6px;
+}
+
+#cart button {
+    width: auto;
+    padding: 4px 8px;
+    margin: 2px;
+    font-size: 12px;
+    border-radius: 4px;
+}
 
 #cart input {
     width: 50%;
@@ -16,9 +40,11 @@
 }
 
 #cart button {
-    display: block;
-    margin: 10px auto;
-    width: 60%;
+    display: inline-block;
+    width: auto;
+    margin: 3px;
+    padding: 4px 8px;
+    font-size: 12px;
 }
 
 #search {
@@ -65,7 +91,12 @@ h2 { color:#1e3a8a; }
     padding:10px;
     border-radius:10px;
 }
-.card img { width:100%; height:150px; object-fit:cover; }
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    background: #fff;
+}
 
 button {
     background:#2563eb;
@@ -109,6 +140,26 @@ input { width:100%; padding:8px; margin:5px 0; }
 }
 </style>
 </head>
+
+
+<div id="imgZoom" style="
+display:none;
+position:fixed;
+top:0; left:0;
+width:100%; height:100%;
+background:rgba(0,0,0,0.8);
+justify-content:center;
+align-items:center;
+z-index:999;
+" onclick="closeZoom()">
+
+<img id="zoomImg" style="
+max-width:90%;
+max-height:90%;
+border-radius:10px;
+">
+</div>
+
 
 <body>
 
@@ -203,7 +254,7 @@ input { width:100%; padding:8px; margin:5px 0; }
 <section id="cart">
 
 <h2>🛒 Cart</h2>
-<div id="cartItems"></div>
+<div id="cartItems" style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;"></div>
 <p>Total: Rs.<span id="total">0</span></p>
 
 <h3>Checkout</h3>
@@ -219,8 +270,12 @@ input { width:100%; padding:8px; margin:5px 0; }
 <section id="admin" style="display:none;">
 <h2>🛠️ Admin Panel</h2>
 
+
+<input id="pcode" placeholder="Item Code (ASC001)">
 <input id="pname" placeholder="Product Name">
 <input id="pprice" placeholder="Price">
+<input id="psize" placeholder="Size (e.g. 6ft x 3ft)">
+<input id="pdesc" placeholder="Description">
 <input type="file" id="pimage">
 
 <button onclick="addProduct()">Add Product</button>
@@ -254,6 +309,17 @@ input { width:100%; padding:8px; margin:5px 0; }
 
 <script>
 
+function zoomImage(src){
+document.getElementById("imgZoom").style.display = "flex";
+document.getElementById("zoomImg").src = src;
+}
+
+function closeZoom(){
+document.getElementById("imgZoom").style.display = "none";
+}
+
+
+
 function filterCategory(type){
 document.querySelectorAll(".card").forEach(card=>{
 let text = card.innerText.toLowerCase();
@@ -269,9 +335,36 @@ card.style.display="none";
 }
 });
 }
-let products = JSON.parse(localStorage.getItem("products")) || [];
+let products = JSON.parse(localStorage.getItem("products")) || [
+{
+code:"ASC001",
+name:"Office Cabinet",
+price:15000,
+img:"cabinet.jpg",
+size:"6ft x 3ft",
+desc:"Heavy duty steel cabinet for office use"
+},
+{
+code:"ASC002",
+name:"Warehouse Rack",
+price:18000,
+img:"rack.jpg",
+size:"7ft x 4ft",
+desc:"Strong rack for warehouse storage"
+},
+{
+code:"ASC003",
+name:"Office Table",
+price:20000,
+img:"table.jpg",
+size:"5ft x 2.5ft",
+desc:"Modern office table with steel frame"
+}
+];
+
 let isAdmin = false;
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
 
 function save(){
 localStorage.setItem("products",JSON.stringify(products));
@@ -295,15 +388,30 @@ reader.readAsDataURL(file);
 }
 
 function addProduct(){
-let name=pname.value;
-let price=parseInt(pprice.value);
-let file=pimage.files[0];
+let code = pcode.value || "N/A";
+let name = pname.value;
+let price = parseInt(pprice.value);
+let size = psize.value || "-";
+let desc = pdesc.value || "";
+let file = pimage.files[0];
 
-if(!name||!price||!file) return alert("Fill all");
+if(!name || !price || !file) return alert("Fill all");
 
-getBase64(file,img=>{
-products.push({name,price,img});
-save(); displayProducts();
+getBase64(file, img => {
+
+products.push({code,name,price,img,size,desc});
+save();
+displayProducts();
+
+
+// ✅ CLEAR FIELDS AFTER ADD
+pcode.value = "";
+pname.value = "";
+pprice.value = "";
+psize.value = "";
+pdesc.value = "";
+pimage.value = "";
+
 });
 }
 
@@ -312,9 +420,12 @@ productsGrid.innerHTML="";
 products.forEach((p,i)=>{
 productsGrid.innerHTML+=`
 <div class="card">
-<img src="${p.img}">
-<h4 onclick="showDetails(${i})">${p.name}</h4>
-<p>Rs.${p.price}</p>
+<img src="${p.img}" onclick="zoomImage('${p.img}')" style="cursor:zoom-in;">
+<h4 onclick="showDetails(${i})" style="text-decoration:underline; cursor:pointer;">
+${p.name}
+</h4><p><b>Code:</b> ${p.code || "-"}</p>
+<p><b>Size:</b> ${p.size || "-"}</p>
+<p>${p.desc || ""}</p><p><b>Rs.${p.price}</b></p>
 <button onclick="addToCart(${i})" style="width:100%; display:flex; align-items:center; justify-content:center; gap:5px;">
 🛒 Add to Cart
 </button>
@@ -328,19 +439,29 @@ ${isAdmin ? `
 }
 
 function editProduct(i){
-let name=prompt("Name",products[i].name);
-let price=prompt("Price",products[i].price);
-if(name&&price){
-products[i].name=name;
-products[i].price=parseInt(price);
-save(); displayProducts();
+let code = prompt("Item Code", products[i].code);
+let name = prompt("Product Name", products[i].name);
+let price = prompt("Price", products[i].price);
+let size = prompt("Size", products[i].size);
+let desc = prompt("Description", products[i].desc);
+
+if(name && price){
+products[i].code = code;
+products[i].name = name;
+products[i].price = parseInt(price);
+products[i].size = size;
+products[i].desc = desc;
+
+save();
+displayProducts();
 }
 }
 
 function deleteProduct(i){
-if(confirm("Delete?")){
+if(confirm("Delete this product?")){
 products.splice(i,1);
-save(); displayProducts();
+save();
+displayProducts();
 }
 }
 
@@ -352,18 +473,36 @@ save(); displayCart();
 }
 
 function displayCart(){
-cartItems.innerHTML="";
-let total=0;
+let cartItemsDiv = document.getElementById("cartItems");
+cartItemsDiv.innerHTML = "";
+let total = 0;
+
 cart.forEach((p,i)=>{
-total+=p.price*p.qty;
-cartItems.innerHTML+=`
-<p>${p.name} Rs.${p.price} x ${p.qty}
+total += p.price * p.qty;
+
+cartItemsDiv.innerHTML += `
+<div style="background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:10px;">
+
+<div style="display:flex; gap:10px; align-items:center;">
+<img src="${p.img}" style="width:50px; height:50px; border-radius:6px;">
+<div>
+
+<b>${p.name}</b><br>
+Rs.${p.price} × ${p.qty} = <b>Rs.${p.price * p.qty}</b>
+
+<br>
+
 <button onclick="changeQty(${i},1)">+</button>
 <button onclick="changeQty(${i},-1)">-</button>
-<button onclick="removeItem(${i})">X</button>
-</p>`;
+<button onclick="removeItem(${i})">❌</button>
+
+</div>
+</div>
+
+</div>`;
 });
-document.getElementById("total").innerText=total;
+
+document.getElementById("total").innerText = total;
 }
 
 function changeQty(i,v){
