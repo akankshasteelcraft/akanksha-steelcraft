@@ -6,6 +6,21 @@
 <title>Akanksha SteelCraft</title>
 
 <style>
+
+.cart-float {
+    position: fixed;
+    bottom: 80px; /* above WhatsApp */
+    right: 20px;
+    background: #2563eb;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+
 #admin {
     max-width: 400px;
     margin: 20px auto;
@@ -134,9 +149,11 @@ input { width:100%; padding:8px; margin:5px 0; }
     bottom:20px;
     right:20px;
     background:#25D366;
-    color:white;
-    padding:15px;
+    padding:12px;
     border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 </style>
 </head>
@@ -276,7 +293,7 @@ border-radius:10px;
 <input id="pprice" placeholder="Price">
 <input id="psize" placeholder="Size (e.g. 6ft x 3ft)">
 <input id="pdesc" placeholder="Description">
-<input type="file" id="pimage">
+<input type="file" id="pimage" multiple>
 
 <button onclick="addProduct()">Add Product</button>
 
@@ -291,7 +308,14 @@ border-radius:10px;
 
 <div class="footer">© 2026 Akanksha SteelCraft | All Rights Reserved</div>
 
-<a class="whatsapp" href="https://wa.me/9779823364064">💬</a>
+<a class="whatsapp" href="https://wa.me/9779823364064" target="_blank">
+<img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="30">
+</a>
+
+<div class="cart-float" onclick="openCart()">
+🛒 <span id="cartCount">0</span>
+</div>
+
 
 <!-- MODAL -->
 <div id="modal" class="modal">
@@ -308,6 +332,10 @@ border-radius:10px;
 
 
 <script>
+
+function openCart(){
+location.href = "#cart";
+}
 
 function zoomImage(src){
 document.getElementById("imgZoom").style.display = "flex";
@@ -393,26 +421,37 @@ let name = pname.value;
 let price = parseInt(pprice.value);
 let size = psize.value || "-";
 let desc = pdesc.value || "";
-let file = pimage.files[0];
+let files = pimage.files;
 
-if(!name || !price || !file) return alert("Fill all");
+if(!name || !price || files.length === 0) return alert("Fill all");
 
-getBase64(file, img => {
+let images = [];
+let loaded = 0;
 
-products.push({code,name,price,img,size,desc});
+for(let i=0;i<files.length;i++){
+let reader = new FileReader();
+
+reader.onload = function(e){
+images.push(e.target.result);
+loaded++;
+
+if(loaded === files.length){
+products.push({code,name,price,img:images,size,desc});
 save();
 displayProducts();
 
+// clear fields
+pcode.value="";
+pname.value="";
+pprice.value="";
+psize.value="";
+pdesc.value="";
+pimage.value="";
+}
+};
 
-// ✅ CLEAR FIELDS AFTER ADD
-pcode.value = "";
-pname.value = "";
-pprice.value = "";
-psize.value = "";
-pdesc.value = "";
-pimage.value = "";
-
-});
+reader.readAsDataURL(files[i]);
+}
 }
 
 function displayProducts(){
@@ -420,7 +459,9 @@ productsGrid.innerHTML="";
 products.forEach((p,i)=>{
 productsGrid.innerHTML+=`
 <div class="card">
-<img src="${p.img}" onclick="zoomImage('${p.img}')" style="cursor:zoom-in;">
+<img src="${Array.isArray(p.img) ? p.img[0] : p.img}" 
+onclick="zoomImage('${Array.isArray(p.img) ? p.img[0] : p.img}')"
+style="cursor:zoom-in;">
 <h4 onclick="showDetails(${i})" style="text-decoration:underline; cursor:pointer;">
 ${p.name}
 </h4><p><b>Code:</b> ${p.code || "-"}</p>
@@ -454,6 +495,8 @@ products[i].desc = desc;
 
 save();
 displayProducts();
+
+alert("Product added successfully!");
 }
 }
 
@@ -470,6 +513,7 @@ let found=cart.find(x=>x.name===products[i].name);
 if(found) found.qty++;
 else cart.push({...products[i],qty:1});
 save(); displayCart();
+document.getElementById("cartCount").innerText = cart.length;
 }
 
 function displayCart(){
@@ -484,7 +528,8 @@ cartItemsDiv.innerHTML += `
 <div style="background:#f8fafc; padding:10px; border-radius:6px; margin-bottom:10px;">
 
 <div style="display:flex; gap:10px; align-items:center;">
-<img src="${p.img}" style="width:50px; height:50px; border-radius:6px;">
+<img src="${Array.isArray(p.img) ? p.img[0] : p.img}" 
+style="width:50px; height:50px; border-radius:6px;">
 <div>
 
 <b>${p.name}</b><br>
@@ -527,14 +572,15 @@ function showDetails(i){
 modal.style.display="block";
 mname.innerText=products[i].name;
 mprice.innerText="Rs."+products[i].price;
-mimg.src=products[i].img;
+let img = products[i].img;
+mimg.src = Array.isArray(img) ? img[0] : img;
 }
 
 function closeModal(){ modal.style.display="none"; }
 
 displayProducts();
 displayCart();
-
+document.getElementById("cartCount").innerText = cart.length;
 
 document.addEventListener("keydown", function(e){
 if(e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a"){
@@ -562,10 +608,22 @@ return;
 let message = "New Order\n\n";
 
 cart.forEach(item=>{
-message += item.name + " x " + item.qty + " = Rs." + (item.price * item.qty) + "\n";
+message += "------------------\n";
+message += "Product: " + item.name + "\n";
+message += "Code: " + (item.code || "-") + "\n";
+message += "Size: " + (item.size || "-") + "\n";
+message += "Price: Rs." + item.price + "\n";
+message += "Qty: " + item.qty + "\n";
+message += "Total: Rs." + (item.price * item.qty) + "\n\n";
 });
 
-message += "\nTotal: Rs." + document.getElementById("total").innerText + "\n\n";
+
+
+// ✅ FIXED NUMBER
+message += "==================\n";
+message += "Grand Total: Rs." + document.getElementById("total").innerText + "\n\n";
+
+message += "Customer Details\n";
 message += "Name: " + name + "\n";
 message += "Phone: " + phone + "\n";
 message += "Address: " + address + "\n";
@@ -573,14 +631,14 @@ message += "Address: " + address + "\n";
 if(email){
 message += "Email: " + email + "\n";
 }
-
-// ✅ FIXED NUMBER
 let url = "https://wa.me/9779823364064?text=" + encodeURIComponent(message);
-
 window.open(url, "_blank");
+
 cart = [];
 localStorage.removeItem("cart");
 displayCart();
+
+document.getElementById("cartCount").innerText = cart.length;
 
 // ✅ CLEAR FORM FIELDS
 document.getElementById("name").value = "";
